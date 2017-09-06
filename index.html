@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>glynnbird.com - the homepage of Glynn Bird</title>
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="binball.css">
+</head>
+<body>
+  <div id="app">
+    <div v-if="mode == 'splash'" class="jumbotron">
+      <h1 class="display-3">Welcome to BinBall</h1>
+      <p class="lead">Ball + Bin = Fun</p>
+      <button class="btn btn-primary btn-lg" v-on:click="startTeamSelection">Start</button>
+    </div>
+
+    <div v-if="mode == 'teams'">
+       <h2>Define Teams</h2>
+       <p>Add the team members that are going to play:</p>
+       <ul>
+         <li v-for="team in teams">{{ team }}</li>
+         <li><input id="newteam" v-model="newteam" type="text" v-on:keyup.enter="addTeam" /></li>
+       </ul>
+       <button v-if="teams.length > 1" v-on:click="startGame">Play</button>
+    </div>
+
+    <div v-if="mode == 'play'">
+      <h2>BinBall</h2>
+
+      <div v-if="!finished">
+         <p>Current player: {{ scorecard[currentPlayer].name }}</p>
+         <p>Current round: {{ currentRound }} of {{ numRounds }}</p>
+         <p>
+          <select ref="selector" v-model="currentAttempt">
+            <option value="0">-------</option>
+            <option value="1">1st attempt</option>
+            <option value="2">2nd attempt</option>
+            <option value="3">3rd attempt</option>
+          </select>
+         </p>
+         <p v-if="scorecard[currentPlayer].joker == false">
+           Joker <input type="checkbox" v-model="playedJoker">
+         </p>  
+         <p>
+            <button v-on:click="registerScore">Register Score</button>
+        </p>      
+
+      </div>
+      <table class="table">
+        <tr>
+          <th></th>
+          <th v-for="team,i in scorecard" v-bind:class="{ active: (i == currentPlayer) }">{{ team.name}}</th>
+        </tr>
+        <tr v-for="i in numRounds" v-bind:class="{ active: (i == currentRound) }">
+          <td>{{ i }}</td>
+          <td v-for="team in scorecard">
+            {{ team.rounds[i-1] }}
+          </td>
+        </tr>
+        <tr>
+          <td>TOTALS</td>
+          <td v-for="team in scorecard">{{ team.total }}</td>
+        </tr>
+      </table>
+      <p v-if="finished">
+        Game Over!
+        <button v-on:click="splash">Another game?</button>
+      <p>
+    </div>
+
+  </div>
+  <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
+  <script src="binball.js"></script>
+</body>
+</html>
