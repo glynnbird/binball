@@ -12,8 +12,21 @@ var app = new Vue({
     currentPlayer: 0,
     currentRound: 1,
     currentAttempt: 0,
-    playedJoker: false,
     finished: true
+  },
+  computed: {
+    title: function() {
+      var title = 'BinBall';
+      switch(this.mode) {
+        case 'teams':
+          title += ' - Define Teams';
+          break;
+        case 'play':
+          title += ' - Play';
+          break;
+      }
+      return title;
+    }
   },
   created: function () {
     
@@ -34,12 +47,10 @@ var app = new Vue({
       }
       this.finished = false;
       this.scorecard = [];
-      this.hideJoker = false
       this.currentRound = 1;
       for(var i in this.teams) {
         var obj = {
           rounds: [ 0, 0, 0, 0, 0, 0],
-          joker: false,
           total: 0,
           name: this.teams[i]
         };
@@ -58,14 +69,13 @@ var app = new Vue({
       }
 
       var scorecard = this.scorecard[this.currentPlayer];
-
-      if (this.playedJoker) {
-        score *= 2;
-        scorecard.joker = true;
-      }
-      
       scorecard.rounds[this.currentRound-1] = score;
-      scorecard.total += score;
+
+      // calculate score
+      scorecard.total = 0;
+      for(var i = 0; i < this.numRounds; i++) {
+        scorecard.total += scorecard.rounds[i];
+      }
 
       // increment everything
       this.currentPlayer++;
@@ -77,10 +87,21 @@ var app = new Vue({
         this.finished = true;
       }
       this.currentAttempt = 0;
-      this.playedJoker = false;
 
       // set focus
       this.$refs.selector.focus()
+    },
+    rewind: function() {
+      if (this.currentPlayer > 0 || this.currentRound > 1) {
+        this.currentPlayer--;
+        if (this.currentPlayer < 0) {
+          this.currentPlayer = this.teams.length - 1;
+          this.currentRound--;
+          this.currentAttempt = 0;
+          this.$refs.selector.focus()
+        }
+      }
+      ;
     },
     splash: function() {
       this.finished = false;

@@ -1,3 +1,12 @@
 .active {
   background-color: #ccc
 }
+
+#theapp {
+  margin-top:20px;
+}
+
+.badge {
+  font-size:16px;
+  margin-right:10px;
+}

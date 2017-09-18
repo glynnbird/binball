@@ -8,67 +8,79 @@
   <link rel="stylesheet" type="text/css" href="binball.css">
 </head>
 <body>
-  <div id="app" class="container">
-    <div v-if="mode == 'splash'" class="jumbotron">
-      <h1 class="display-3">Welcome to BinBall</h1>
-      <p class="lead">Ball + Bin = Fun</p>
-      <button class="btn btn-primary btn-lg" v-on:click="startTeamSelection">Start</button>
-    </div>
+  <div id="app">
+    <nav class="navbar navbar-light bg-light">
+      <a class="navbar-brand" href="index.html">
+        <img src="nbba.png" width="30" height="30" alt="">
+        {{ title }}
+      </a>
+      <span class="navbar-text" v-if="mode == 'play'">
+         <span v-for="team,i in teams" class="badge badge-secondary" v-bind:class="{ 'badge-success': (i == currentPlayer)}">{{team}}</span>         
+      </span>
+      <span class="navbar-text" v-if="mode == 'play'">
+        <span v-for="i in numRounds" class="badge badge-secondary" v-bind:class="{ 'badge-success': (i == currentRound)}">{{i}}</span>  
+      </span>
+    </nav>
+    <div id="theapp" class="container">
 
-    <div v-if="mode == 'teams'">
-       <h2>Define Teams</h2>
-       <p>Add the team members that are going to play:</p>
-       <ul>
-         <li v-for="team in teams">{{ team }}</li>
-         <li><input id="newteam" v-model="newteam" type="text" v-on:keyup.enter="addTeam" /></li>
-       </ul>
-       <button v-if="teams.length > 1" v-on:click="startGame">Play</button>
-    </div>
-
-    <div v-if="mode == 'play'">
-      <h2>BinBall</h2>
-
-      <div v-if="!finished">
-         <p>Current player: {{ scorecard[currentPlayer].name }}</p>
-         <p>Current round: {{ currentRound }} of {{ numRounds }}</p>
-         <p>
-          <select ref="selector" v-model="currentAttempt">
-            <option value="0">-------</option>
-            <option value="1">1st attempt</option>
-            <option value="2">2nd attempt</option>
-            <option value="3">3rd attempt</option>
-          </select>
-         </p>
-         <p v-if="scorecard[currentPlayer].joker == false">
-           Joker <input type="checkbox" v-model="playedJoker">
-         </p>  
-         <p>
-            <button v-on:click="registerScore">Register Score</button>
-        </p>      
-
+      <div v-if="mode == 'splash'" class="jumbotron">
+        <div class="float-right">
+          <img class="img-responsive" src="nbba.png" />
+        </div>
+        <h1 class="display-3">Welcome to BinBall</h1>
+        <p class="lead">Ball + Bin = Fun</p>
+        <div class="clearfix"></div>
+        <button class="btn btn-primary btn-lg" v-on:click="startTeamSelection">Start</button>
       </div>
-      <table class="table">
-        <tr>
-          <th></th>
-          <th v-for="team,i in scorecard" v-bind:class="{ active: (i == currentPlayer) }">{{ team.name}}</th>
-        </tr>
-        <tr v-for="i in numRounds" v-bind:class="{ active: (i == currentRound) }">
-          <td>{{ i }}</td>
-          <td v-for="team in scorecard">
-            {{ team.rounds[i-1] }}
-          </td>
-        </tr>
-        <tr>
-          <td>TOTALS</td>
-          <td v-for="team in scorecard">{{ team.total }}</td>
-        </tr>
-      </table>
-      <p v-if="finished">
-        Game Over!
-        <button v-on:click="splash">Another game?</button>
-      <p>
-    </div>
 
+      <div class="jumbotron" v-if="mode == 'teams'">
+        <p>Add the team members that are going to play:</p>
+        <ul>
+          <li v-for="team in teams">{{ team }}</li>
+          <li><input id="newteam" v-model="newteam" type="text" v-on:keyup.enter="addTeam" /></li>
+        </ul>
+        <button v-if="teams.length > 1" v-on:click="startGame">Play</button>
+      </div>
+
+      <div v-if="mode == 'play'">
+
+        <div class="jumbotron" v-if="!finished">
+          <p>
+            <select ref="selector" v-model="currentAttempt">
+              <option value="0">-------</option>
+              <option value="1">1st attempt</option>
+              <option value="2">2nd attempt</option>
+              <option value="3">3rd attempt</option>
+            </select>
+          </p>
+          <p>
+              <button v-on:click="registerScore">Register Score</button>
+              <button v-on:click="rewind">&lt;&lt;</button>
+          </p>      
+        </div>
+        <table class="table">
+          <tr>
+            <th>Round</th>
+            <th v-for="team,i in scorecard">{{ team.name}}</th>
+          </tr>
+          <tr v-for="i in numRounds">
+            <td>{{ i }}</td>
+            <td v-for="team,j in scorecard" v-bind:class="{ active: (i == currentRound && j == currentPlayer) }">
+              {{ team.rounds[i-1] }}
+            </td>
+          </tr>
+          <tr>
+            <td>TOTALS</td>
+            <td v-for="team in scorecard">{{ team.total }}</td>
+          </tr>
+        </table>
+        <p v-if="finished">
+          Game Over!
+          <button v-on:click="splash">Another game?</button>
+        <p>
+      </div>
+
+    </div>
   </div>
   <script src="https://unpkg.com/vue@2.4.2/dist/vue.js"></script>
   <script src="binball.js"></script>
