@@ -34,7 +34,12 @@
       </div>
 
       <div class="jumbotron" v-if="mode == 'teams'">
-        <p>Add the team members that are going to play:</p>
+        <h5>Number of rounds</h5>
+        <div>
+          <input v-model="numRounds" type="number" min="3" max="9" />
+        </div>
+        <hr />
+        <h5>Add the team members that are going to play:</h5>
         <ul>
           <li v-for="team in teams">{{ team }}</li>
           <li><input id="newteam" v-model="newteam" type="text" v-on:keyup.enter="addTeam" /></li>

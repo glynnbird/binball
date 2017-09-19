@@ -48,13 +48,19 @@ var app = new Vue({
       this.finished = false;
       this.scorecard = [];
       this.currentRound = 1;
+      if (typeof this.numRounds === 'string') {
+        this.numRounds = parseInt(this.numRounds);
+      }
       for(var i in this.teams) {
         var obj = {
-          rounds: [ 0, 0, 0, 0, 0, 0],
+          rounds: [ ],
           total: 0,
           name: this.teams[i]
         };
-        this.numRounds = obj.rounds.length;
+        for(var j =0; j < this.numRounds; j++) {
+          obj.rounds.push(0)
+        }
+        console.log(obj, this.numRounds)
         this.scorecard.push(obj);
       }
       this.currentPlayer = 0;
